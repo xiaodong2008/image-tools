@@ -6,6 +6,10 @@ A site with a series of tools for image processing, it's run on your browser wit
 
 - [x] Image Stitching
 
+## Preview
+
+![Preview](./preview.png)
+
 ## Sponsors
 
 My Open Source works are powered by ❤️, if you like my work, please consider [sponsoring me](https://github.com/sponsors/xiaodong2008).

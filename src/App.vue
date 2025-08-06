@@ -12,7 +12,7 @@ onMounted(() => {
   <div id="app-container" class="container">
     <div class="header">
       <div class="header-left">
-        <RouterLink to="/" class="link">Home</RouterLink>
+        <RouterLink to="/" class="link">Stitching</RouterLink>
       </div>
       <div class="header-right">
         <div class="header-right-item">
