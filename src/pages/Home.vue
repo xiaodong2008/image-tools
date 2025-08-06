@@ -285,6 +285,8 @@ const removeImage = (index: number) => {
     backgroundSelected.value = "Transparent";
     adjustSizeSelected.value = "None";
   }
+
+  stitchImages();
 };
 
 // on color change, stitch images
