@@ -1,12 +1,4 @@
-import config from "./config";
 import { useToast } from "primevue/usetoast";
-
-export function getRequestUrl(path: string) {
-  if (import.meta.env.DEV) {
-    return `http://localhost:3000${path}`;
-  }
-  return `${localStorage.getItem("backendUrl") || config.defaultBackendUrl}${path}`;
-}
 
 export const showToast = {
   success: (toast: ReturnType<typeof useToast>, summary: string, detail: string, life: number = 3000) => {
