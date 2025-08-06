@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import App from "./App.vue";
 import Button from "primevue/button";
+import ButtonGroup from "primevue/buttongroup";
 import Card from "primevue/card";
 import ColorPicker from "primevue/colorpicker";
 import FileUpload from "primevue/fileupload";
@@ -83,6 +84,7 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.component("Button", Button);
+app.component("ButtonGroup", ButtonGroup);
 app.component("Card", Card);
 app.component("ColorPicker", ColorPicker);
 app.component("FileUpload", FileUpload);

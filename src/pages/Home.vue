@@ -276,6 +276,26 @@ const downloadStitchedImage = () => {
   );
 };
 
+const moveImageUp = (index: number) => {
+  if (index > 0) {
+    const temp = uploadedImages.value[index];
+    uploadedImages.value[index] = uploadedImages.value[index - 1];
+    uploadedImages.value[index - 1] = temp;
+    stitchedImageUrl.value = "";
+    stitchImages();
+  }
+};
+
+const moveImageDown = (index: number) => {
+  if (index < uploadedImages.value.length - 1) {
+    const temp = uploadedImages.value[index];
+    uploadedImages.value[index] = uploadedImages.value[index + 1];
+    uploadedImages.value[index + 1] = temp;
+    stitchedImageUrl.value = "";
+    stitchImages();
+  }
+};
+
 const removeImage = (index: number) => {
   uploadedImages.value.splice(index, 1);
   stitchedImageUrl.value = "";
@@ -338,13 +358,33 @@ watch(backgroundColor, () => {
               <span>{{ image.file.name }}</span>
               <span>{{ image.width }} × {{ image.height }}</span>
             </div>
-            <Button
-              icon="pi pi-trash"
-              severity="danger"
-              size="small"
-              @click="removeImage(index)"
-              class="remove-btn"
-            />
+            <div class="image-controls">
+              <ButtonGroup>
+                <Button
+                  icon="pi pi-chevron-up"
+                  severity="secondary"
+                  size="small"
+                  @click="moveImageUp(index)"
+                  :disabled="index === 0"
+                  title="Move Up"
+                />
+                <Button
+                  icon="pi pi-chevron-down"
+                  severity="secondary"
+                  size="small"
+                  @click="moveImageDown(index)"
+                  :disabled="index === uploadedImages.length - 1"
+                  title="Move Down"
+                />
+              </ButtonGroup>
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                @click="removeImage(index)"
+                title="Remove"
+              />
+            </div>
           </div>
         </div>
       </template>
@@ -483,15 +523,14 @@ watch(backgroundColor, () => {
       }
     }
 
-    .remove-btn {
+    .image-controls {
       position: absolute;
+      display: flex;
+      gap: 4px;
       top: 8px;
       right: 8px;
-      opacity: 0.8;
-
-      &:hover {
-        opacity: 1;
-      }
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
     }
   }
 }
