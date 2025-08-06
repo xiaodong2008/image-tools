@@ -296,6 +296,20 @@ const moveImageDown = (index: number) => {
   }
 };
 
+const openFileDialog = () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.multiple = true;
+  input.accept = "image/*";
+  input.onchange = (event) => {
+    const files = (event.target as HTMLInputElement).files;
+    if (files && files.length > 0) {
+      onFileSelect({ files: Array.from(files) });
+    }
+  };
+  input.click();
+};
+
 const removeImage = (index: number) => {
   uploadedImages.value.splice(index, 1);
   stitchedImageUrl.value = "";
@@ -319,34 +333,27 @@ watch(backgroundColor, () => {
   <div class="container">
     <Toast />
 
-    <!-- File Upload Section -->
-    <Card>
-      <template #title>Upload Images</template>
-      <template #content>
-        <div class="upload-section">
-          <FileUpload
-            name="images[]"
-            :multiple="true"
-            accept="image/*"
-            :maxFileSize="10000000"
-            @select="onFileSelect"
-            @clear="onFileClear"
-            :auto="true"
-            chooseLabel="Choose Images"
-            cancelLabel="Clear"
-            :showCancelButton="true"
-            :showUploadButton="false"
-            :customUpload="true"
-            class="file-upload"
-          />
-        </div>
-      </template>
-    </Card>
-
     <!-- Uploaded Images Preview -->
-    <Card v-if="uploadedImages.length > 0">
+    <Card>
       <template #title>Uploaded Images ({{ uploadedImages.length }})</template>
       <template #content>
+        <div class="upload-section">
+          <Button
+            icon="pi pi-plus"
+            label="Choose Images"
+            severity="primary"
+            @click="openFileDialog"
+            class="upload-btn"
+          />
+          <Button
+            icon="pi pi-trash"
+            severity="danger"
+            label="Clear All"
+            @click="onFileClear"
+            title="Clear"
+            v-if="uploadedImages.length > 0"
+          />
+        </div>
         <div class="images-preview">
           <div
             v-for="(image, index) in uploadedImages"
@@ -482,8 +489,13 @@ watch(backgroundColor, () => {
 }
 
 .upload-section {
-  .file-upload {
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .upload-btn {
+    flex: 1;
   }
 }
 
