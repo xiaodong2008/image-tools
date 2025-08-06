@@ -23,7 +23,7 @@ const backgroundSelected = ref("Transparent");
 const backgroundColor = ref("#ffffff");
 
 const adjustSizeOptions = ref(["None", "Min", "Max"]);
-const adjustSizeSelected = ref("None");
+const adjustSizeSelected = ref("Max");
 
 // Debug watcher for color picker
 watch(backgroundColor, (newValue) => {
@@ -362,7 +362,7 @@ watch(backgroundColor, () => {
           >
             <img :src="image.url" :alt="`Image ${index + 1}`" />
             <div class="image-info">
-              <span>{{ image.file.name }}</span>
+              <span class="filename">{{ image.file.name }}</span>
               <span>{{ image.width }} × {{ image.height }}</span>
             </div>
             <div class="image-controls">
@@ -509,7 +509,7 @@ watch(backgroundColor, () => {
     position: relative;
     border-radius: 8px;
     overflow: hidden;
-    background: #8f8f8fa8;
+    background: #f3f3f3a8;
     display: flex;
     align-items: center;
     padding: 4px;
@@ -531,6 +531,10 @@ watch(backgroundColor, () => {
       flex: 1;
       font-size: 0.875rem;
       color: #666;
+
+      .filename {
+        white-space: wrap;
+      }
 
       span {
         display: block;
