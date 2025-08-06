@@ -488,27 +488,35 @@ watch(backgroundColor, () => {
 }
 
 .images-preview {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 16px;
 
   .image-item {
     position: relative;
-    border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
-    background: #f8f9fa;
+    background: #8f8f8fa8;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    padding-right: 18px;
+    gap: 12px;
 
     img {
-      width: 100%;
-      height: 150px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
       display: block;
+      border-radius: 4px;
+      flex-shrink: 0;
     }
 
     .image-info {
-      padding: 8px;
+      display: flex;
+      gap: 8px;
+      flex: 1;
       font-size: 0.875rem;
       color: #666;
 
@@ -524,7 +532,7 @@ watch(backgroundColor, () => {
     }
 
     .image-controls {
-      position: absolute;
+      // position: absolute;
       display: flex;
       gap: 4px;
       top: 8px;
@@ -639,8 +647,17 @@ watch(backgroundColor, () => {
   }
 
   .images-preview {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
+    gap: 8px;
+  }
+
+  .image-item {
+    padding: 8px;
+    gap: 8px;
+
+    img {
+      width: 60px;
+      height: 60px;
+    }
   }
 
   .stitching-controls {
