@@ -22,6 +22,9 @@ const backgroundOptions = ref(["Transparent", "Color"]);
 const backgroundSelected = ref("Transparent");
 const backgroundColor = ref("#ffffff");
 
+const adjustSizeOptions = ref(["None", "Min", "Max"]);
+const adjustSizeSelected = ref("None");
+
 // Debug watcher for color picker
 watch(backgroundColor, (newValue) => {
   console.log("Background color changed:", newValue);
@@ -113,12 +116,6 @@ const stitchImages = async () => {
       throw new Error("Failed to get canvas context");
     }
 
-    // Calculate dimensions based on layout
-    let totalWidth = 0;
-    let totalHeight = 0;
-    let maxWidth = 0;
-    let maxHeight = 0;
-
     // Load all images first
     const images = await Promise.all(
       uploadedImages.value.map(async (imgData) => {
@@ -130,14 +127,73 @@ const stitchImages = async () => {
       })
     );
 
+    // Calculate adjusted dimensions based on size adjustment option
+    let adjustedImages: (HTMLImageElement | HTMLCanvasElement)[] = images;
+
+    if (adjustSizeSelected.value !== "None") {
+      adjustedImages = images.map((img) => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) return img;
+
+        let targetWidth = img.width;
+        let targetHeight = img.height;
+
+        if (layoutSelected.value === "Horizontal") {
+          // For horizontal layout, adjust height
+          if (adjustSizeSelected.value === "Min") {
+            const minHeight = Math.min(...images.map((img) => img.height));
+            targetHeight = minHeight;
+          } else if (adjustSizeSelected.value === "Max") {
+            const maxHeight = Math.max(...images.map((img) => img.height));
+            targetHeight = maxHeight;
+          }
+        } else {
+          // For vertical layout, adjust width
+          if (adjustSizeSelected.value === "Min") {
+            const minWidth = Math.min(...images.map((img) => img.width));
+            targetWidth = minWidth;
+          } else if (adjustSizeSelected.value === "Max") {
+            const maxWidth = Math.max(...images.map((img) => img.width));
+            targetWidth = maxWidth;
+          }
+        }
+
+        // Calculate new dimensions maintaining aspect ratio
+        const aspectRatio = img.width / img.height;
+        let newWidth = targetWidth;
+        let newHeight = targetHeight;
+
+        if (layoutSelected.value === "Horizontal") {
+          // For horizontal, maintain aspect ratio by adjusting width
+          newWidth = targetHeight * aspectRatio;
+        } else {
+          // For vertical, maintain aspect ratio by adjusting height
+          newHeight = targetWidth / aspectRatio;
+        }
+
+        // Create resized image
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        return canvas;
+      });
+    }
+
+    // Calculate canvas dimensions based on adjusted images
+    let totalWidth = 0;
+    let totalHeight = 0;
+
     if (layoutSelected.value === "Horizontal") {
-      // Calculate total width and max height
-      totalWidth = images.reduce((sum, img) => sum + img.width, 0);
-      totalHeight = Math.max(...images.map((img) => img.height));
+      // Calculate total width and max height from adjusted images
+      totalWidth = adjustedImages.reduce((sum, img) => sum + img.width, 0);
+      totalHeight = Math.max(...adjustedImages.map((img) => img.height));
     } else {
-      // Calculate max width and total height
-      totalWidth = Math.max(...images.map((img) => img.width));
-      totalHeight = images.reduce((sum, img) => sum + img.height, 0);
+      // Calculate max width and total height from adjusted images
+      totalWidth = Math.max(...adjustedImages.map((img) => img.width));
+      totalHeight = adjustedImages.reduce((sum, img) => sum + img.height, 0);
     }
 
     // Set canvas dimensions
@@ -164,8 +220,8 @@ const stitchImages = async () => {
     let currentX = 0;
     let currentY = 0;
 
-    for (let i = 0; i < images.length; i++) {
-      const img = images[i];
+    for (let i = 0; i < adjustedImages.length; i++) {
+      const img = adjustedImages[i];
 
       if (layoutSelected.value === "Horizontal") {
         ctx.drawImage(img, currentX, 0);
@@ -227,6 +283,7 @@ const removeImage = (index: number) => {
   // Reset background to transparent if no images left
   if (uploadedImages.value.length === 0) {
     backgroundSelected.value = "Transparent";
+    adjustSizeSelected.value = "None";
   }
 };
 
@@ -338,6 +395,16 @@ watch(backgroundColor, () => {
             </div>
           </div>
 
+          <div class="adjust-size-selection">
+            <label>Adjust Size:</label>
+            <SelectButton
+              v-model="adjustSizeSelected"
+              :options="adjustSizeOptions"
+              class="adjust-size-buttons"
+              @change="stitchImages"
+            />
+          </div>
+
           <div class="stitched-preview">
             <img
               :src="stitchedImageUrl"
@@ -433,7 +500,8 @@ watch(backgroundColor, () => {
   gap: 16px;
 
   .layout-selection,
-  .background-selection {
+  .background-selection,
+  .adjust-size-selection {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -445,7 +513,8 @@ watch(backgroundColor, () => {
     }
 
     .layout-buttons,
-    .background-buttons {
+    .background-buttons,
+    .adjust-size-buttons {
       flex: 1;
     }
 
@@ -535,7 +604,8 @@ watch(backgroundColor, () => {
 
   .stitching-controls {
     .layout-selection,
-    .background-selection {
+    .background-selection,
+    .adjust-size-selection {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
